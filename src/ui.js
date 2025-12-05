@@ -3,9 +3,9 @@
  * @param {Object} tractFeature - Census tract feature data
  * @param {number} lat - Latitude coordinate
  * @param {number} lon - Longitude coordinate
- * @param {Object} fieldConstants - Object containing field name constants
+ * @param {Object} fields - Object containing field mappings (name, state, county, etc.)
  */
-export const displayTractInfo = (tractFeature, lat, lon, fieldConstants) => {
+export const displayTractInfo = (tractFeature, lat, lon, fields) => {
   const attrs = tractFeature.attributes;
   
   const infoDiv = document.createElement('div');
@@ -31,14 +31,14 @@ export const displayTractInfo = (tractFeature, lat, lon, fieldConstants) => {
   infoDiv.innerHTML = `
     <h2>Census Tract Information</h2>
     <p><strong>Location:</strong> ${lat.toFixed(4)}, ${lon.toFixed(4)}</p>
-    <p><strong>Tract:</strong> ${attrs[fieldConstants.FIELD_NAME] || 'Unknown'}</p>
-    <p><strong>State:</strong> ${attrs[fieldConstants.FIELD_STATE] || 'Unknown'}</p>
-    <p><strong>County:</strong> ${attrs[fieldConstants.FIELD_COUNTY] || 'Unknown'}</p>
+    <p><strong>Tract:</strong> ${attrs[fields.name] || 'Unknown'}</p>
+    <p><strong>State:</strong> ${attrs[fields.state] || 'Unknown'}</p>
+    <p><strong>County:</strong> ${attrs[fields.county] || 'Unknown'}</p>
     <hr>
     <h3>Housing & Income Data</h3>
-    <p><strong>Median Contract Rent:</strong> ${formatCurrency(attrs[fieldConstants.FIELD_MEDIAN_CONTRACT_RENT])}</p>
-    <p><strong>Median Home Value:</strong> ${formatCurrency(attrs[fieldConstants.FIELD_MEDIAN_HOME_VALUE])}</p>
-    <p><strong>Median Household Income:</strong> ${formatCurrency(attrs[fieldConstants.FIELD_MEDIAN_HOUSEHOLD_INCOME])}</p>
+    <p><strong>Median Contract Rent:</strong> ${formatCurrency(attrs[fields.medianContractRent])}</p>
+    <p><strong>Median Home Value:</strong> ${formatCurrency(attrs[fields.medianHomeValue])}</p>
+    <p><strong>Median Household Income:</strong> ${formatCurrency(attrs[fields.medianIncome])}</p>
   `;
   
   document.body.insertBefore(infoDiv, document.body.firstChild);

@@ -3,13 +3,50 @@ import { parseLatLonFromURL } from './coordinates.js'
 import { fetchTractByLatLon } from './censusApi.js'
 import { displayTractInfo, displayNoDataMessage, displayErrorMessage } from './ui.js'
 
-const SERVICE_ACS_POPULATION_AND_HOUSING_BASICS_TRACT = 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_10_14_Highlights_Population_Housing_Basics_Boundaries/FeatureServer/2';
-const FIELD_MEDIAN_CONTRACT_RENT = 'B25058_001E';
-const FIELD_MEDIAN_HOME_VALUE = 'B25077_001E';
-const FIELD_MEDIAN_HOUSEHOLD_INCOME = 'B19049_001E';
-const FIELD_STATE = 'State';
-const FIELD_COUNTY = 'County';
-const FIELD_NAME = 'NAME';
+const CENSUS_CONFIG = {
+  "ACS Population and Housing Basics": {
+    tract: {
+      url: 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_10_14_Highlights_Population_Housing_Basics_Boundaries/FeatureServer/2',
+      fields: {
+        name: 'NAME',
+        state: 'State',
+        county: 'County',
+        medianContractRent: 'B25058_001E',
+        medianHomeValue: 'B25077_001E',
+        medianIncome: 'B19049_001E'
+      }
+    },
+    state: {
+      url: 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_10_14_Highlights_Population_Housing_Basics_Boundaries/FeatureServer/0',
+      fields: {
+        name: 'NAME',
+        medianContractRent: 'B25058_001E',
+        medianHomeValue: 'B25077_001E',
+        medianIncome: 'B19049_001E'
+      }
+    }
+  },
+  "ACS Housing Costs": {
+    tract: {
+      url: 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_Housing_Costs_Boundaries/FeatureServer/2',
+      fields: {
+        name: 'NAME',
+        state: 'State',
+        county: 'County',
+        medianContractRent: 'B25058_001E',
+        medianHomeValue: 'B25077_001E'
+      }
+    },
+    state: {
+      url: 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_Housing_Costs_Boundaries/FeatureServer/0',
+      fields: {
+        name: 'NAME',
+        medianContractRent: 'B25058_001E',
+        medianHomeValue: 'B25077_001E'
+      }
+    }
+  }
+};
 
 async function main() {
 
@@ -17,20 +54,15 @@ async function main() {
 
   const LATLON = parseLatLonFromURL() || [43.6767, -70.3477]; // Default to Lamb Street, Portland, ME
 
+  // Use the Population and Housing Basics tract service for now
+  const currentConfig = CENSUS_CONFIG["ACS Population and Housing Basics"].tract;
+
   try {
-    const tractFeature = await fetchTractByLatLon(LATLON[0], LATLON[1], SERVICE_ACS_POPULATION_AND_HOUSING_BASICS_TRACT);
+    const tractFeature = await fetchTractByLatLon(LATLON[0], LATLON[1], currentConfig.url);
     
     if (tractFeature) {
       console.log("Tract Feature:", tractFeature);
-      const fieldConstants = {
-        FIELD_NAME,
-        FIELD_STATE,
-        FIELD_COUNTY,
-        FIELD_MEDIAN_CONTRACT_RENT,
-        FIELD_MEDIAN_HOME_VALUE,
-        FIELD_MEDIAN_HOUSEHOLD_INCOME
-      };
-      displayTractInfo(tractFeature, LATLON[0], LATLON[1], fieldConstants);
+      displayTractInfo(tractFeature, LATLON[0], LATLON[1], currentConfig.fields);
     } else {
       console.log("No tract data found for coordinates:", LATLON);
       displayNoDataMessage(LATLON[0], LATLON[1]);
@@ -39,13 +71,6 @@ async function main() {
     console.error("Error fetching tract data:", error);
     displayErrorMessage(LATLON[0], LATLON[1], error);
   }
-
-  /*
-  SERVICE_ACS_POPULATION_AND_HOUSING_BASICS_STATE = 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_10_14_Highlights_Population_Housing_Basics_Boundaries/FeatureServer/0';
-  SERVICE_ACS_HOUSING_COSTS_BOUNDARIES_STATE = 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_Housing_Costs_Boundaries/FeatureServer/2';
-  const FIELD_MEDIAN_CONTRACT_RENT_STATE = 'B25058_001E';
-  const FIELD_MEDIAN_HOME_VALUE_STATE = 'B25077_001E';
-  */
 
   /*
   // Create and insert the embed script manually
