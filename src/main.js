@@ -12,26 +12,26 @@ const debugMessage = DEBUG_MODE ? showTemporaryMessage : () => {};
 async function main() {
 
   const STORY_ID = '4961e406d6364e198c71cdf3de491285';
-  let LATLON = parseLatLonFromURL(); 
+  let latLon = parseLatLonFromURL(); 
 
-  if (!LATLON) {
+  if (!latLon) {
 
     debugMessage(`⚠️ No lat/lon params provided.`);
     debugMessage(`Attempting geolocation...`);
 
-    LATLON = await getLatLonByGeoLocation();
+    latLon = await getLatLonByGeoLocation();
 
-    if (LATLON) {
-        debugMessage(`Location found: ${LATLON}`);
+    if (latLon) {
+        debugMessage(`Location found: ${latLon}`);
         debugMessage("Redirecting...");
     } else {
-        LATLON = [43.6767, -70.3477]; // Lamb Street, Portland, ME
+        latLon = [43.6767, -70.3477]; // Lamb Street, Portland, ME
         debugMessage(`⚠️ No location found.`);
-        debugMessage(`Defaulting to Lamb Street, Portland, ME, ${LATLON}...`);
+        debugMessage(`Defaulting to Lamb Street, Portland, ME, ${latLon}...`);
         debugMessage("Redirecting...");
     }
 
-    redirectToLatLon(LATLON, DEBUG_MODE && DEBUG_MESSAGE_DURATION);
+    redirectToLatLon(latLon, DEBUG_MODE && DEBUG_MESSAGE_DURATION);
 
     return;
 
@@ -43,18 +43,18 @@ async function main() {
   const currentConfig = CENSUS_CONFIG["ACS Population and Housing Basics"].tract;
 
   try {
-    const tractFeature = await fetchTractByLatLon(LATLON[0], LATLON[1], currentConfig.url);
+    const tractFeature = await fetchTractByLatLon(latLon[0], latLon[1], currentConfig.url);
     
     if (tractFeature) {
       console.log("Tract Feature:", tractFeature);
-      displayTractInfo(tractFeature, LATLON[0], LATLON[1], currentConfig.fields);
+      displayTractInfo(tractFeature, latLon[0], latLon[1], currentConfig.fields);
     } else {
-      console.log("No tract data found for coordinates:", LATLON);
-      displayNoDataMessage(LATLON[0], LATLON[1]);
+      console.log("No tract data found for coordinates:", latLon);
+      displayNoDataMessage(latLon[0], latLon[1]);
     }
   } catch (error) {
     console.error("Error fetching tract data:", error);
-    displayErrorMessage(LATLON[0], LATLON[1], error);
+    displayErrorMessage(latLon[0], latLon[1], error);
   }
 
   /*
