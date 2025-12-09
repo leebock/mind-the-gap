@@ -1,7 +1,7 @@
 import './style.css'
 import { parseLatLonFromURL, getLatLonByGeoLocation } from './coordinates.js'
 import { fetchTractByLatLon } from './censusApi.js'
-import { displayTractInfo, displayNoDataMessage, displayErrorMessage, showTemporaryMessage } from './ui.js'
+import { createTractInfoCard, createNoDataMessageCard, displayErrorMessage, showTemporaryMessage } from './ui.js'
 import { CENSUS_CONFIG } from './config.js'
 import { redirectToLatLon } from './utils.js'
 
@@ -47,11 +47,14 @@ async function main() {
     
     if (tractFeature) {
       console.log("Tract Feature:", tractFeature);
-      displayTractInfo(tractFeature, latLon[0], latLon[1], currentConfig.fields);
+      const infoCard = createTractInfoCard(tractFeature, latLon[0], latLon[1], currentConfig.fields);
+      document.body.insertBefore(infoCard, document.body.firstChild);
     } else {
       console.log("No tract data found for coordinates:", latLon);
-      displayNoDataMessage(latLon[0], latLon[1]);
+      const noDataCard = createNoDataMessageCard(latLon[0], latLon[1]);
+      document.body.insertBefore(noDataCard, document.body.firstChild);
     }
+
   } catch (error) {
     console.error("Error fetching tract data:", error);
     displayErrorMessage(latLon[0], latLon[1], error);

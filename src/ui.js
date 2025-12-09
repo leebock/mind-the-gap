@@ -5,7 +5,7 @@
  * @param {number} lon - Longitude coordinate
  * @param {Object} fields - Object containing field mappings (name, state, county, etc.)
  */
-export const displayTractInfo = (tractFeature, lat, lon, fields) => {
+export const createTractInfoCard = (tractFeature, lat, lon, fields) => {
   const attrs = tractFeature.attributes;
   
   const infoDiv = document.createElement('div');
@@ -41,7 +41,7 @@ export const displayTractInfo = (tractFeature, lat, lon, fields) => {
     <p><strong>Median Household Income:</strong> ${formatCurrency(attrs[fields.medianIncome])}</p>
   `;
   
-  document.body.insertBefore(infoDiv, document.body.firstChild);
+  return infoDiv;
 };
 
 /**
@@ -49,7 +49,7 @@ export const displayTractInfo = (tractFeature, lat, lon, fields) => {
  * @param {number} lat - Latitude coordinate  
  * @param {number} lon - Longitude coordinate
  */
-export const displayNoDataMessage = (lat, lon) => {
+export const createNoDataMessageCard = (lat, lon) => {
   const noDataDiv = document.createElement('div');
   noDataDiv.style.cssText = `
     padding: 20px;
@@ -68,7 +68,7 @@ export const displayNoDataMessage = (lat, lon) => {
     <p><em>This location may be in an area not covered by the census tract boundaries, such as water bodies or remote areas.</em></p>
   `;
   
-  document.body.insertBefore(noDataDiv, document.body.firstChild);
+  return noDataDiv;
 };
 
 /**
