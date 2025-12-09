@@ -1,12 +1,14 @@
 /**
  * Display census tract information in a styled card
- * @param {Object} tractFeature - Census tract feature data
- * @param {number} lat - Latitude coordinate
- * @param {number} lon - Longitude coordinate
- * @param {Object} fields - Object containing field mappings (name, state, county, etc.)
+ * @param {number[]} latLon - Array containing latitude and longitude coordinates
+ * @param {Object} tractData - Census tract attributes object
+ * @param {Object} stateData1 - Census state attributes from Population & Housing dataset
+ * @param {Object} stateData2 - Census state attributes from Housing Costs dataset
+ * @param {Object} fieldMappings - Object containing field name mappings for tract and state data
  */
-export const createTractInfoCard = (tractFeature, lat, lon, fields) => {
-  const attrs = tractFeature.attributes;
+export const createTractInfoCard = (latLon, tractData, stateData1, stateData2, fieldMappings) => {
+  const lat = latLon[0];
+  const lon = latLon[1];
   
   const infoDiv = document.createElement('div');
   infoDiv.style.cssText = `
@@ -27,17 +29,44 @@ export const createTractInfoCard = (tractFeature, lat, lon, fields) => {
     }).format(value);
   };
   
+  const formatPercent = (value) => {
+    if (!value || value < 0) return 'N/A';
+    return new Intl.NumberFormat('en-US', {
+      style: 'percent',
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
+    }).format(value / 100);
+  };
+  
+  // Extract tract data using field mappings
+  const tractName = tractData?.[fieldMappings.tract.name] || 'Unknown';
+  const tractCounty = tractData?.[fieldMappings.tract.county] || 'Unknown';
+  const tractState = tractData?.[fieldMappings.tract.state] || 'Unknown';
+  const medianRent = tractData?.[fieldMappings.tract.medianContractRent];
+  const medianHomeValue = tractData?.[fieldMappings.tract.medianHomeValue];
+  const medianIncome = tractData?.[fieldMappings.tract.medianIncome];
+  
   infoDiv.innerHTML = `
     <h2>Census Tract Information</h2>
-    <p><strong>Location:</strong> ${lat.toFixed(4)}, ${lon.toFixed(4)}</p>
-    <p><strong>Tract:</strong> ${attrs[fields.name] || 'Unknown'}</p>
-    <p><strong>State:</strong> ${attrs[fields.state] || 'Unknown'}</p>
-    <p><strong>County:</strong> ${attrs[fields.county] || 'Unknown'}</p>
+    <p>Location: <strong>${lat.toFixed(4)}, ${lon.toFixed(4)}</strong></p>
+    <p>Tract: <strong>${tractName}</strong></p>
+    <p>County: <strong>${tractCounty}</strong></p>
+    <p>State: <strong>${tractState}</strong></p>
     <hr>
-    <h3>Housing & Income Data</h3>
-    <p><strong>Median Contract Rent:</strong> ${formatCurrency(attrs[fields.medianContractRent])}</p>
-    <p><strong>Median Home Value:</strong> ${formatCurrency(attrs[fields.medianHomeValue])}</p>
-    <p><strong>Median Household Income:</strong> ${formatCurrency(attrs[fields.medianIncome])}</p>
+    <h3>Tract-Level Data</h3>
+    <p>Median Contract Rent: <strong>${formatCurrency(medianRent)}</strong></p>
+    <p>Median Home Value: <strong>${formatCurrency(medianHomeValue)}</strong></p>
+    <p>Median Household Income: <strong>${formatCurrency(medianIncome)}</strong></p>
+    
+    <h3>State-Level Comparisons (${tractState})</h3>
+    <h4>Population & Housing Data</h4>
+    <p>Median Contract Rent: <strong>${formatCurrency(stateData1?.[fieldMappings.state1.medianContractRent])}</strong></p>
+    <p>Median Home Value: <strong>${formatCurrency(stateData1?.[fieldMappings.state1.medianHomeValue])}</strong></p>
+    <p>Median Household Income: <strong>${formatCurrency(stateData1?.[fieldMappings.state1.medianIncome])}</strong></p>
+    
+    <h4>Housing Costs Data</h4>
+    <p>Percent Renters Spending More Than 30%: <strong>${formatPercent(stateData2?.[fieldMappings.state2.pctRentersSpendingMoreThan30Pct])}</strong></p>
+    <p>Percent Owners Spending More Than 30%: <strong>${formatPercent(stateData2?.[fieldMappings.state2.pctOwnersSpendingMoreThan30Pct])}</strong></p>
   `;
   
   return infoDiv;
@@ -45,10 +74,11 @@ export const createTractInfoCard = (tractFeature, lat, lon, fields) => {
 
 /**
  * Display a friendly message when no census data is found
- * @param {number} lat - Latitude coordinate  
- * @param {number} lon - Longitude coordinate
+ * @param {number[]} latLon - Array containing latitude and longitude coordinates
  */
-export const createNoDataMessageCard = (lat, lon) => {
+export const createNoDataMessageCard = (latLon) => {
+  const lat = latLon[0];
+  const lon = latLon[1];
   const noDataDiv = document.createElement('div');
   noDataDiv.style.cssText = `
     padding: 20px;
@@ -71,11 +101,12 @@ export const createNoDataMessageCard = (lat, lon) => {
 
 /**
  * Display an error message for failed data requests
- * @param {number} lat - Latitude coordinate
- * @param {number} lon - Longitude coordinate  
+ * @param {number[]} latLon - Array containing latitude and longitude coordinates
  * @param {Error} error - Error object with message
  */
-export const displayErrorMessage = (lat, lon, error) => {
+export const displayErrorMessage = (latLon, error) => {
+  const lat = latLon[0];
+  const lon = latLon[1];
   const errorDiv = document.createElement('div');
   errorDiv.style.cssText = `
     padding: 20px;

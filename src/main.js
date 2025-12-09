@@ -1,6 +1,6 @@
 import './style.css'
 import { parseLatLonFromURL, getLatLonByGeoLocation } from './coordinates.js'
-import { fetchTractByLatLon } from './censusApi.js'
+import { fetchFeatureByLatLon } from './censusApi.js'
 import { createTractInfoCard, createNoDataMessageCard, displayErrorMessage, showTemporaryMessage } from './ui.js'
 import { CENSUS_CONFIG } from './config.js'
 import { redirectToLatLon } from './utils.js'
@@ -51,7 +51,13 @@ async function main() {
   document.body.appendChild(loadingDiv);
 
   try {
-    const tractFeature = await fetchTractByLatLon(latLon[0], latLon[1], currentConfig.url);
+
+    const tractFeature = await fetchFeatureByLatLon(latLon, currentConfig.url);
+    const stateFeature1 = await fetchFeatureByLatLon(latLon, CENSUS_CONFIG["ACS Population and Housing Basics"].state.url);
+    const stateFeature2 = await fetchFeatureByLatLon(latLon, CENSUS_CONFIG["ACS Housing Costs"].state.url);
+
+    console.log(stateFeature1);
+    console.log(stateFeature2);
 
     // Remove loading spinner
     document.body.removeChild(loadingDiv);
@@ -59,10 +65,25 @@ async function main() {
     let card;
     if (tractFeature) {
       console.log("Tract Feature:", tractFeature);
-      card = createTractInfoCard(tractFeature, latLon[0], latLon[1], currentConfig.fields);
+      
+      // Create field mappings object
+      const fieldMappings = {
+        tract: CENSUS_CONFIG["ACS Population and Housing Basics"].tract.fields,
+        state1: CENSUS_CONFIG["ACS Population and Housing Basics"].state.fields,
+        state2: CENSUS_CONFIG["ACS Housing Costs"].state.fields
+      };
+      
+      card = createTractInfoCard(
+        latLon, 
+        tractFeature.attributes,
+        stateFeature1?.attributes,
+        stateFeature2?.attributes,
+        fieldMappings
+      );
+      console.log("Created tract info card");
     } else {
       console.log("No tract data found for coordinates:", latLon);
-      card = createNoDataMessageCard(latLon[0], latLon[1]);
+      card = createNoDataMessageCard(latLon);
       console.log("Created no data message card");
     }
 
