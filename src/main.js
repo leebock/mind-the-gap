@@ -4,6 +4,7 @@ import { fetchTractByLatLon } from './censusApi.js'
 import { createTractInfoCard, createNoDataMessageCard, displayErrorMessage, showTemporaryMessage } from './ui.js'
 import { CENSUS_CONFIG } from './config.js'
 import { redirectToLatLon } from './utils.js'
+import { initializeMap } from './map.js'
 
 const DEBUG_MODE = true/*new URLSearchParams(window.location.search).has("debug")*/;
 const DEBUG_MESSAGE_DURATION = 3000;
@@ -37,8 +38,6 @@ async function main() {
 
   }
 
-
-
   // Use the Population and Housing Basics tract service for now
   const currentConfig = CENSUS_CONFIG["ACS Population and Housing Basics"].tract;
 
@@ -63,8 +62,7 @@ async function main() {
     divInfoPanel.appendChild(card);
 
     const divMap = document.createElement('div');
-    divMap.className = 'map-placeholder';
-    divMap.innerHTML = `Your map will appear here. (Map functionality to be implemented)`;
+    divMap.className = 'map';
 
     const divMapPanel = document.createElement('div');
     divMapPanel.className = 'map-panel';
@@ -74,6 +72,9 @@ async function main() {
     divContentContainer.appendChild(divMapPanel);
 
     document.body.insertBefore(divContentContainer, document.body.firstChild);
+
+    await initializeMap(divMap, latLon);
+
   } catch (error) {
     console.error("Error fetching tract data:", error);
     displayErrorMessage(latLon[0], latLon[1], error);

@@ -25,16 +25,9 @@ body {
   min-width: 0;
 }
 
-.map-placeholder {
+.map {
   height: 400px;
-  background-color: wheat;
   border-radius: 8px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #666;
 }
 
 /* Responsive: Stack vertically on narrow screens */
