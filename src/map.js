@@ -1,12 +1,13 @@
-export async function initializeMap(mapDiv, latLon) {
+export async function initializeMap(mapDiv, latLon, tractFeature, tractServiceUrl) {
 
-  const [Map, MapView, Point, Graphic, SimpleMarkerSymbol] =
+  const [Map, MapView, Point, Graphic, SimpleMarkerSymbol, FeatureLayer] =
     await $arcgis.import([
       "esri/Map",
       "esri/views/MapView",
       "esri/geometry/Point",
       "esri/Graphic",
-      "esri/symbols/SimpleMarkerSymbol"
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/layers/FeatureLayer"
     ]);
 
   const map = new Map({
@@ -48,6 +49,43 @@ export async function initializeMap(mapDiv, latLon) {
 
   view.graphics.add(locationGraphic);
   console.log("Added location marker to map.");
+
+  // Add tract boundary as FeatureLayer (only if we have tract data)
+  if (tractFeature && tractFeature.attributes && tractFeature.attributes.GEOID) {
+    const tractLayer = new FeatureLayer({
+      url: tractServiceUrl,
+      outFields: ["*"],
+      definitionExpression: `GEOID = '${tractFeature.attributes.GEOID}'`, // Filter to just this tract
+      renderer: {
+        type: "simple",
+        symbol: {
+          type: "simple-fill",
+          color: [255, 0, 0, 0.3], // Semi-transparent red
+          outline: {
+            color: [255, 0, 0],
+            width: 2
+          }
+        }
+      }
+    });
+    
+    map.add(tractLayer);
+    console.log("Added tract layer");
+
+    // Wait for tract layer to load and zoom to its extent
+    await tractLayer.when();
+    console.log("Tract layer loaded");
+    
+    // Query the layer to get the extent of the filtered tract
+    const query = tractLayer.createQuery();
+    const result = await tractLayer.queryExtent(query);
+    
+    if (result.extent) {
+      console.log("Zooming to tract extent:", result.extent);
+      await view.goTo(result.extent.expand(1.2)); // Add some padding
+    }
+
+  }
 
 
 }

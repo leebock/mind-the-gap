@@ -85,7 +85,7 @@ async function main() {
 
     document.body.insertBefore(divContentContainer, document.body.firstChild);
 
-    await initializeMap(divMap, latLon);
+    await initializeMap(divMap, latLon, tractFeature, currentConfig.url);
       
   } catch (error) {
     // Remove loading spinner on error
