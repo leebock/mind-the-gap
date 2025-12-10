@@ -53,18 +53,36 @@ export const createTractInfoCard = (latLon, tractData, stateData1, stateData2, f
     <p>County: <strong>${tractCounty}</strong></p>
     <p>State: <strong>${tractState}</strong></p>
     <hr>
-    <h3>Tract-Level Data</h3>
-    <p>Median Contract Rent: <strong>${formatCurrency(medianRent)}</strong></p>
-    <p>Median Home Value: <strong>${formatCurrency(medianHomeValue)}</strong></p>
-    <p>Median Household Income: <strong>${formatCurrency(medianIncome)}</strong></p>
     
-    <h3>State-Level Comparisons (${tractState})</h3>
-    <h4>Population & Housing Data</h4>
-    <p>Median Contract Rent: <strong>${formatCurrency(stateData1?.[fieldMappings.state1.medianContractRent])}</strong></p>
-    <p>Median Home Value: <strong>${formatCurrency(stateData1?.[fieldMappings.state1.medianHomeValue])}</strong></p>
-    <p>Median Household Income: <strong>${formatCurrency(stateData1?.[fieldMappings.state1.medianIncome])}</strong></p>
+    <h3>Housing & Income Comparison</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+      <thead>
+        <tr style="background-color: #e9ecef;">
+          <th style="padding: 8px; text-align: left; border: 1px solid #dee2e6;">Metric</th>
+          <th style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">This Tract</th>
+          <th style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">${tractState} State</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #dee2e6;">Median Contract Rent</td>
+          <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6; font-weight: bold;">${formatCurrency(medianRent)}</td>
+          <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6; font-weight: bold;">${formatCurrency(stateData1?.[fieldMappings.state1.medianContractRent])}</td>
+        </tr>
+        <tr style="background-color: #f8f9fa;">
+          <td style="padding: 8px; border: 1px solid #dee2e6;">Median Home Value</td>
+          <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6; font-weight: bold;">${formatCurrency(medianHomeValue)}</td>
+          <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6; font-weight: bold;">${formatCurrency(stateData1?.[fieldMappings.state1.medianHomeValue])}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #dee2e6;">Median Household Income</td>
+          <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6; font-weight: bold;">${formatCurrency(medianIncome)}</td>
+          <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6; font-weight: bold;">${formatCurrency(stateData1?.[fieldMappings.state1.medianIncome])}</td>
+        </tr>
+      </tbody>
+    </table>
     
-    <h4>Housing Costs Data</h4>
+    <h3>Additional State Data</h3>
     <p>Percent Renters Spending More Than 30%: <strong>${formatPercent(stateData2?.[fieldMappings.state2.pctRentersSpendingMoreThan30Pct])}</strong></p>
     <p>Percent Owners Spending More Than 30%: <strong>${formatPercent(stateData2?.[fieldMappings.state2.pctOwnersSpendingMoreThan30Pct])}</strong></p>
   `;
