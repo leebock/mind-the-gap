@@ -10,6 +10,11 @@ const DEBUG_MODE = true/*new URLSearchParams(window.location.search).has("debug"
 const DEBUG_MESSAGE_DURATION = 3000;
 const debugMessage = DEBUG_MODE ? showTemporaryMessage : () => {};
 
+// Stub function for Find Location button
+const handleFindLocation = () => {
+  alert("Find Location functionality coming soon!");
+};
+
 async function main() {
 
   const STORY_ID = '4961e406d6364e198c71cdf3de491285';
@@ -78,7 +83,8 @@ async function main() {
         tractFeature.attributes,
         stateFeature1?.attributes,
         stateFeature2?.attributes,
-        fieldMappings
+        fieldMappings,
+        handleFindLocation
       );
       console.log("Created tract info card");
     } else {

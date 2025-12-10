@@ -5,8 +5,9 @@
  * @param {Object} stateData1 - Census state attributes from Population & Housing dataset
  * @param {Object} stateData2 - Census state attributes from Housing Costs dataset
  * @param {Object} fieldMappings - Object containing field name mappings for tract and state data
+ * @param {Function} onFindLocationClick - Click handler for the Find New Location button
  */
-export const createTractInfoCard = (latLon, tractData, stateData1, stateData2, fieldMappings) => {
+export const createTractInfoCard = (latLon, tractData, stateData1, stateData2, fieldMappings, onFindLocationClick) => {
   const lat = latLon[0];
   const lon = latLon[1];
   
@@ -48,10 +49,28 @@ export const createTractInfoCard = (latLon, tractData, stateData1, stateData2, f
   
   infoDiv.innerHTML = `
     <h2>Census Tract Information</h2>
-    <p>Location: <strong>${lat.toFixed(4)}, ${lon.toFixed(4)}</strong></p>
-    <p>Tract: <strong>${tractName}</strong></p>
-    <p>County: <strong>${tractCounty}</strong></p>
-    <p>State: <strong>${tractState}</strong></p>
+    <p style="position: relative;"><span style="display: inline-block; width: 70px;">Location:</span><strong>${lat.toFixed(4)}, ${lon.toFixed(4)}</strong> 
+      <button id="find-location-btn" style="
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        position: absolute;
+        right: 0;
+        top: -5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      ">
+        🔍 Find New Location
+      </button>
+    </p>
+    <p><span style="display: inline-block; width: 70px;">Tract:</span><strong>${tractName}</strong></p>
+    <p><span style="display: inline-block; width: 70px;">County:</span><strong>${tractCounty}</strong></p>
+    <p><span style="display: inline-block; width: 70px;">State:</span><strong>${tractState}</strong></p>
     <hr>
     
     <h3>Housing & Income Comparison</h3>
@@ -86,6 +105,12 @@ export const createTractInfoCard = (latLon, tractData, stateData1, stateData2, f
     <p>Percent Renters Spending More Than 30%: <strong>${formatPercent(stateData2?.[fieldMappings.state2.pctRentersSpendingMoreThan30Pct])}</strong></p>
     <p>Percent Owners Spending More Than 30%: <strong>${formatPercent(stateData2?.[fieldMappings.state2.pctOwnersSpendingMoreThan30Pct])}</strong></p>
   `;
+  
+  // Add event listener for the Find New Location button
+  const button = infoDiv.querySelector('#find-location-btn');
+  if (button && onFindLocationClick) {
+    button.addEventListener('click', onFindLocationClick);
+  }
   
   return infoDiv;
 };
