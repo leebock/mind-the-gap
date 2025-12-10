@@ -2,6 +2,7 @@ import './style.css'
 import { parseLatLonFromURL, getLatLonByGeoLocation } from './coordinates.js'
 import { fetchFeatureByLatLon } from './censusApi.js'
 import { createTractInfoCard, createNoDataMessageCard, displayErrorMessage, showTemporaryMessage } from './ui.js'
+import { showAddressModal } from './addressModal.js'
 import { CENSUS_CONFIG } from './config.js'
 import { redirectToLatLon } from './utils.js'
 import { initializeMap } from './map.js'
@@ -10,9 +11,37 @@ const DEBUG_MODE = true/*new URLSearchParams(window.location.search).has("debug"
 const DEBUG_MESSAGE_DURATION = 3000;
 const debugMessage = DEBUG_MODE ? showTemporaryMessage : () => {};
 
-// Stub function for Find Location button
+// Debug: Check if API key is loaded
+console.log('API Key loaded:', import.meta.env.VITE_ARCGIS_API_KEY ? 'Yes' : 'No');
+
+// Handle Find Location button click - show address modal
 const handleFindLocation = () => {
-  alert("Find Location functionality coming soon!");
+  // Get API key from environment variable (Vite prefix: VITE_)
+  const apiKey = import.meta.env.VITE_ARCGIS_API_KEY;
+  
+  if (!apiKey) {
+    console.warn('No ArcGIS API key found. Set VITE_ARCGIS_API_KEY environment variable.');
+    alert('Geocoding requires an ArcGIS API key. Please configure VITE_ARCGIS_API_KEY environment variable.');
+    return;
+  }
+  
+  showAddressModal(
+    (coordinates) => {
+      // coordinates is [lat, lon] array
+      const [lat, lon] = coordinates;
+      
+      // Update the URL and reload data for the new location
+      const newUrl = `${window.location.pathname}?lat=${lat}&lon=${lon}`;
+      window.history.pushState({}, '', newUrl);
+      
+      // Reload the page with new coordinates
+      window.location.reload();
+    },
+    () => {
+      console.log('Address search cancelled');
+    },
+    apiKey // Pass the API key to the modal
+  );
 };
 
 async function main() {
