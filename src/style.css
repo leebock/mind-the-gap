@@ -68,7 +68,12 @@ body {
     padding: 15px;
   }
   
-  .map-placeholder {
+  .map-panel, .info-panel {
+    flex: none;
+    width: 100%;
+  }
+  
+  .map {
     height: 300px; /* Smaller on mobile */
   }
 }
