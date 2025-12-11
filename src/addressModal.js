@@ -62,21 +62,43 @@ export const showAddressModal = (onSubmit, onCancel, apiKey) => {
     </div>
     
     <div style="margin-bottom: 20px;">
-      <input 
-        type="text" 
-        id="address-input" 
-        placeholder="Address or place name"
-        style="
-          width: 100%;
-          padding: 10px;
-          border: 2px solid #ddd;
-          border-radius: 4px;
-          font-size: 14px;
-          box-sizing: border-box;
-          outline: none;
-          transition: border-color 0.2s;
-        "
-      />
+      <div style="display: flex; gap: 8px;">
+        <input 
+          type="text" 
+          id="address-input" 
+          placeholder="Address or place name"
+          style="
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+          "
+        />
+        <button 
+          id="search-btn"
+          style="
+            padding: 10px 16px;
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+          "
+        >
+          Search
+        </button>
+      </div>
+      <div style="font-size: 12px; color: #666; margin-top: 6px;">
+        Choose from suggestions below or click Search to find your exact text
+      </div>
     </div>
     
     <div id="candidates-container" style="
@@ -89,6 +111,7 @@ export const showAddressModal = (onSubmit, onCancel, apiKey) => {
   const input = modal.querySelector('#address-input');
   const candidatesContainer = modal.querySelector('#candidates-container');
   const closeBtn = modal.querySelector('#close-btn');
+  const searchBtn = modal.querySelector('#search-btn');
   
   // Add input focus styling
   input.addEventListener('focus', () => {
@@ -96,6 +119,16 @@ export const showAddressModal = (onSubmit, onCancel, apiKey) => {
   });
   input.addEventListener('blur', () => {
     input.style.borderColor = '#ddd';
+  });
+  
+  // Add search button hover effects
+  searchBtn.addEventListener('mouseenter', () => {
+    searchBtn.style.backgroundColor = '#0056b3';
+    searchBtn.style.borderColor = '#0056b3';
+  });
+  searchBtn.addEventListener('mouseleave', () => {
+    searchBtn.style.backgroundColor = '#007bff';
+    searchBtn.style.borderColor = '#007bff';
   });
   
   // Fetch address candidates from ArcGIS REST API
@@ -203,10 +236,64 @@ export const showAddressModal = (onSubmit, onCancel, apiKey) => {
     }, 300); // 300ms debounce
   };
   
+  // Direct geocoding for raw text input (bypass suggestions)
+  const geocodeDirectly = async (address) => {
+    if (!address || !address.trim()) return;
+    
+    try {
+      console.log('Direct geocoding for:', address);
+      
+      const url = `https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=pjson&singleLine=${encodeURIComponent(address.trim())}&countryCode=USA&maxLocations=1&token=${apiKey}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const json = await response.json();
+      
+      if (json.candidates && json.candidates.length > 0) {
+        const candidate = json.candidates[0];
+        const x = candidate.location.x;
+        const y = candidate.location.y;
+        
+        // Close modal and call onSubmit with [lat, lon]
+        document.body.removeChild(overlay);
+        onSubmit([y, x]); // lat, lon format
+      } else {
+        alert(`No results found for "${address}". Please try a more specific address.`);
+      }
+    } catch (error) {
+      console.error('Direct geocoding error:', error);
+      alert('Error searching for address. Please try again.');
+    }
+  };
+
   // Handle input changes
   input.addEventListener('input', (e) => {
     console.log('Input event fired:', e.target.value);
     handleAddressChange(e.target.value);
+  });
+  
+  // Handle Enter key - bypass suggestions and search directly
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const searchText = input.value.trim();
+      if (searchText) {
+        geocodeDirectly(searchText);
+      }
+    }
+  });
+  
+  // Handle search button click - same as Enter key
+  searchBtn.addEventListener('click', () => {
+    const searchText = input.value.trim();
+    if (searchText) {
+      geocodeDirectly(searchText);
+    } else {
+      input.focus();
+    }
   });
   
   // Handle cancel/close
