@@ -7,7 +7,7 @@ import { CENSUS_CONFIG } from './config.js'
 import { redirectToLatLon } from './utils.js'
 import { initializeMap } from './map.js'
 
-const DEBUG_MODE = true/*new URLSearchParams(window.location.search).has("debug")*/;
+const DEBUG_MODE = new URLSearchParams(window.location.search).has("debug");
 const DEBUG_MESSAGE_DURATION = 3000;
 const debugMessage = DEBUG_MODE ? showTemporaryMessage : () => {};
 
