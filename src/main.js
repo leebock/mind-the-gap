@@ -126,7 +126,24 @@ async function main() {
             node.data.text = `Housing Affordability Comparison for Zip Code ${zipFeature.attributes.ID}!`;
             break;
           case 'n-s5BlpJ':
-            node.data.caption = `Zip code ${zipFeature.attributes.ID} (City, State)`;
+            node.data.caption = `Zip code ${zipFeature.attributes.ID} (${zipFeature.attributes.NAME}, ${zipFeature.attributes.ST_ABBREV})`;
+            break;
+          case 'n-HG38Yi':
+            // headers
+            node.data.cells[0][1].value = zipFeature.attributes.ID;
+            node.data.cells[0][2].value = stateFeature.attributes.NAME;
+            // median home value
+            node.data.cells[1][1].value = zipFeature.attributes.MEDVAL_CY.toLocaleString();
+            node.data.cells[1][2].value = stateFeature.attributes.MEDVAL_CY.toLocaleString();
+            node.data.cells[1][3].value = nationFeature.attributes.MEDVAL_CY.toLocaleString();
+            // median household income
+            node.data.cells[2][1].value = zipFeature.attributes.MEDHINC_CY.toLocaleString();
+            node.data.cells[2][2].value = stateFeature.attributes.MEDHINC_CY.toLocaleString();
+            node.data.cells[2][3].value = nationFeature.attributes.MEDHINC_CY.toLocaleString();
+            // affordability index
+            node.data.cells[3][1].value = zipFeature.attributes.HAI_CY.toFixed(0);
+            node.data.cells[3][2].value = stateFeature.attributes.HAI_CY.toFixed(0);
+            node.data.cells[3][3].value = nationFeature.attributes.HAI_CY.toFixed(0);
             break;
           default:
             break;
