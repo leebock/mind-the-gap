@@ -118,6 +118,55 @@ async function main() {
   const storyProxy = createStoryProxy(
     `/embed/view/${STORY_ID}/data`, 
     (json) => {
+
+      // remove any extent data associated with webmap nodes
+      Object.entries(json.publishedData.nodes)
+        .filter(([_, resource]) => resource.type === "webmap")
+        .forEach(([_, webmapNode]) => {
+          console.log("Modifying webmap node extent:", webmapNode);
+          delete webmapNode.data.extent;
+          delete webmapNode.data.center;
+          delete webmapNode.data.viewpoint;
+          delete webmapNode.data.zoom;
+        }
+      );
+      
+      // modify the extent for each of the webmap resources
+      Object.entries(json.publishedData.resources)
+        .filter(([_, resource]) => resource.type === "webmap")
+        .forEach(([_, webmapResource]) => {
+          console.log("Modifying webmap resource extent:", webmapResource);
+          console.log("Zip Feature:", zipDetails);
+
+          const bufferedExtent = (env, buffer = 0.01) => {
+            return {
+              xmin: env.xmin - buffer,
+              ymin: env.ymin - buffer,
+              xmax: env.xmax + buffer,
+              ymax: env.ymax + buffer,
+              spatialReference: { wkid: 4326 }
+            };
+          }
+
+          const extentWithBuffer = bufferedExtent(zipDetails.envelope, 0.02);
+
+          webmapResource.data.viewpoint = {
+            rotation: 0,
+            scale: null,
+            targetGeometry: {
+              xmin: extentWithBuffer.xmin,
+              ymin: extentWithBuffer.ymin,
+              xmax: extentWithBuffer.xmax,
+              ymax: extentWithBuffer.ymax,
+              spatialReference: { wkid: 4326 }
+            }
+          };
+
+          delete webmapResource.data.extent;
+
+        }
+      );
+      
       for (const nodeId in json.publishedData.nodes) {
         const node = json.publishedData.nodes[nodeId];
         console.log(node.type, nodeId, node);
