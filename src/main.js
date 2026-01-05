@@ -183,6 +183,9 @@ async function main() {
               case 'n-zjAbcQ':
                 node.data.text = `Housing Affordability Comparison for Zip Code ${zipFeature.attributes.ID}!`;
                 break;
+              case 'n-7gwpks':
+                node.data.text = node.data.text.replace(/^.*?(?=<a)/, "To change zip codes, ");
+                break;
               case 'n-s5BlpJ':
                 node.data.caption = `Zip code ${zipFeature.attributes.ID} (${zipFeature.attributes.NAME}, ${zipFeature.attributes.ST_ABBREV})`;
                 break;
