@@ -162,21 +162,25 @@ async function main() {
           // remove any extent data associated with webmap nodes
           Object.entries(json.publishedData.nodes)
             .filter(([_, resource]) => resource.type === "webmap")
-            .forEach(([_, webmapNode]) => {
+            .forEach(([_, webmapNode], index) => {
               console.log("Modifying webmap node extent:", webmapNode);
-              delete webmapNode.data.extent;
-              delete webmapNode.data.center;
-              delete webmapNode.data.viewpoint;
-              delete webmapNode.data.zoom;
+              if (index > 0) {
+                delete webmapNode.data.extent;
+                delete webmapNode.data.center;
+                delete webmapNode.data.viewpoint;
+                delete webmapNode.data.zoom;
+              }
             }
           );
 
           // modify popup ObjectID for each of the webmap nodes
           Object.entries(json.publishedData.nodes)
             .filter(([_, resource]) => resource.type === "webmap")
-            .forEach(([_, webmapNode]) => {
-              console.log("Modifying popup ObjectID:", webmapNode.data.pinnedPopupInfo.idFieldValue);
-              webmapNode.data.pinnedPopupInfo.idFieldValue = zipFeature.attributes.OBJECTID;
+            .forEach(([_, webmapNode], index) => {
+              if (index > 0) {
+                console.log("Modifying popup ObjectID:", webmapNode.data.pinnedPopupInfo.idFieldValue);
+                webmapNode.data.pinnedPopupInfo.idFieldValue = zipFeature.attributes.OBJECTID;
+              }
             }
           );
           
