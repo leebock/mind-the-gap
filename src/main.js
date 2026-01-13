@@ -166,7 +166,7 @@ async function main() {
               }
             }
           );
-
+          
           // modify popup ObjectID for each of the webmap nodes
           Object.entries(json.publishedData.nodes)
             .filter(([_, resource]) => resource.type === "webmap")
@@ -229,16 +229,15 @@ async function main() {
                 node.data.title = zipFeature.attributes.HAI_CY.toFixed(0);
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
-              case 'n-QrtD62':
-                console.log("Modifying ZIP change link:", node.data);
+              case 'n-vhFhqc':
+                console.log("Modifying ZIP change button:", node.data);
                 // Change href to # to make the link easily findable
-                if (node.data && node.data.text) {
-                  // Find and modify any links in the text content
-                  node.data.text = node.data.text.replace(
-                    /(<a[^>]*)(href="[^"]*")([^>]*>)/gi,
-                    '$1href="#"$3'
-                  );
-                }
+                if (node?.data) node.data.link = '#';
+                break;
+              case 'n-uUsrRp':
+                console.log("Modifying 'Surprise me' button:", node.data);
+                // Change href to # to make the link easily findable
+                if (node?.data) node.data.link = '#';
                 break;
               default:
                 break;
@@ -261,19 +260,38 @@ async function main() {
   // override the hyperlink with href="#" to open the ZIP modal
 
   waitForElement(
-    'a[href="#"]', 
-    (link) => {
-        console.log("Found target link:", link);
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          handleFindZip();
-        });
-        link.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
+    '#n-2pk6Mt', 
+    (parentDiv) => {
+        console.log("Found parent div:", parentDiv);
+        const links = parentDiv.querySelectorAll('a');
+        if (links.length >= 1) {
+          const firstLink = links[0];
+          console.log("Found first link:", firstLink);
+          firstLink.addEventListener("click", (e) => {
             e.preventDefault();
             handleFindZip();
-          }
-        });
+          });
+          firstLink.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleFindZip();
+            }
+          });
+        }
+        if (links.length >= 2) {
+          const secondLink = links[1];
+          console.log("Found second link:", secondLink);
+          secondLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            alert("To be implemented");
+          });
+          secondLink.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              alert("To be implemented");
+            }
+          });
+        }
     }
   );
 
