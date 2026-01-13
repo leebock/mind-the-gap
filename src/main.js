@@ -115,7 +115,7 @@ async function main() {
         }
       },
       {
-        url: `chart_details_1767640457126.json`,
+        url: `chart_details_1768335104571.json`,
         subsitutionFn: (json) => {
           console.log("Modifying chart data JSON:", json);
           json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
@@ -127,7 +127,7 @@ async function main() {
         }
       },
       {
-        url: `chart_details_1766431733422.json`,
+        url: `chart_details_1768338376638.json`,
         subsitutionFn: (json) => {
           console.log("Modifying chart data JSON:", json);
           json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
@@ -139,7 +139,7 @@ async function main() {
         }
       },
       {
-        url: `chart_details_1766431642044.json`,
+        url: `chart_details_1768335129454.json`,
         subsitutionFn: (json) => {
           console.log("Modifying chart data JSON:", json);  
           json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
@@ -166,17 +166,6 @@ async function main() {
                 delete webmapNode.data.center;
                 delete webmapNode.data.viewpoint;
                 delete webmapNode.data.zoom;
-              }
-            }
-          );
-          
-          // modify popup ObjectID for each of the webmap nodes
-          Object.entries(json.publishedData.nodes)
-            .filter(([_, resource]) => resource.type === "webmap")
-            .forEach(([_, webmapNode], index) => {
-              if (index > 0) {
-                console.log("Modifying popup ObjectID:", webmapNode.data.pinnedPopupInfo.idFieldValue);
-                webmapNode.data.pinnedPopupInfo.idFieldValue = zipFeature.attributes.OBJECTID;
               }
             }
           );
