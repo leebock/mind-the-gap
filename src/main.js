@@ -10,6 +10,7 @@ const DEBUG_MODE = new URLSearchParams(window.location.search).has("debug");
 const DEBUG_MESSAGE_DURATION = 3000;
 const debugMessage = DEBUG_MODE ? showTemporaryMessage : () => {};
 const DEFAULT_ZIP = '92373'; // Redlands, CA
+const STORY_ID = '4961e406d6364e198c71cdf3de491285';
 
 // Debug: Check if API key is loaded
 //console.log('API Key loaded:', import.meta.env.VITE_ARCGIS_API_KEY ? 'Yes' : 'No');
@@ -33,12 +34,16 @@ const handleFindZip = () => {
 
 async function main() {
 
-  const STORY_ID = '4961e406d6364e198c71cdf3de491285';
-
   // Parse the ZIP code from the query string
-  const params = new URLSearchParams(window.location.search);
-  const zipParam = params.get("zip");
+
+  const zipParam = new URLSearchParams(window.location.search).get("zip");
+  
   if (!zipParam) {
+
+    // if zipParam doesn't exist; redirect page to a fallback zip, using the 
+    // following logic:
+    // 1. Attempt geolocation to get lat/lon and fetch ZIP
+    // 2. If geolocation fails, use DEFAULT_ZIP
 
     debugMessage(`⚠️ No ZIP param provided.`);
     debugMessage(`Attempting geolocation...`);
@@ -47,6 +52,8 @@ async function main() {
     let zipToUse = DEFAULT_ZIP;
     
     if (latLon) {
+        debugMessage(`Geolocated user at: ${latLon.latitude}, ${latLon.longitude}`);
+        debugMessage(`Fetching ZIP code for location...`);
         const zipPreview = await fetchFeatureByLatLon(latLon, CENSUS_CONFIG["Housing Affordability Index 2025"].zip.url);
         if (zipPreview?.attributes?.ID) {
           zipToUse = zipPreview.attributes.ID;
@@ -65,6 +72,11 @@ async function main() {
     return;
 
   }
+
+  // if we made it to here without a redirect, then we have a zipParam to use!
+  // time to go to work...
+
+  debugMessage(`✅ Using ZIP param: ${zipParam}`);
 
   // Show loading spinner for data query
   const loadingDiv = document.createElement('div');
@@ -249,7 +261,7 @@ async function main() {
   s.setAttribute("data-root-node", ".storymaps-root");
   document.body.appendChild(s);
 
-  // override the hyperlink with href="#" to open the ZIP modal
+  // find the "Change ZIP code" and "Surprise me" links and attach handlers
 
   waitForElement(
     '#n-2pk6Mt', 
