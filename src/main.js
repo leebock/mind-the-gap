@@ -9,8 +9,18 @@ import { createStoryProxy } from './storyProxy.js'
 const DEBUG_MODE = new URLSearchParams(window.location.search).has("debug");
 const DEBUG_MESSAGE_DURATION = 3000;
 const debugMessage = DEBUG_MODE ? showTemporaryMessage : () => {};
-const DEFAULT_ZIP = '92373'; // Redlands, CA
 const STORY_ID = '4961e406d6364e198c71cdf3de491285';
+const RANDOM_ZIPS = [
+  '33109', '94027', '90210', '11962', '31561',
+  '98039', '96754', '99501', '20817',
+  '30327', '97034', '75205', '81435', '78704',
+  '55406', '68104', '58201', '71048', '24729'
+];
+
+const getRandomZip = () => {
+  const randomIndex = Math.floor(Math.random() * RANDOM_ZIPS.length);
+  return RANDOM_ZIPS[randomIndex];
+}
 
 // Debug: Check if API key is loaded
 //console.log('API Key loaded:', import.meta.env.VITE_ARCGIS_API_KEY ? 'Yes' : 'No');
@@ -28,6 +38,13 @@ const handleFindZip = () => {
   );
 };
 
+// Handle Surprise Me button click - pick random ZIP and redirect
+const handleSurpriseMe = () => {
+  redirectToZip(getRandomZip(), 0, true);
+};
+          
+
+
 async function main() {
 
   // Parse the ZIP code from the query string
@@ -39,13 +56,13 @@ async function main() {
     // if zipParam doesn't exist; redirect page to a fallback zip, using the 
     // following logic:
     // 1. Attempt geolocation to get lat/lon and fetch ZIP
-    // 2. If geolocation fails, use DEFAULT_ZIP
+    // 2. If geolocation fails, use a random ZIP from the list
 
     debugMessage(`⚠️ No ZIP param provided.`);
     debugMessage(`Attempting geolocation...`);
 
     const latLon = await getLatLonByGeoLocation();
-    let zipToUse = DEFAULT_ZIP;
+    let zipToUse = getRandomZip();
     
     if (latLon) {
         debugMessage(`Geolocated user at: ${latLon.latitude}, ${latLon.longitude}`);
@@ -288,15 +305,15 @@ async function main() {
         }
         if (links.length >= 2) {
           const secondLink = links[1];
-          console.log("Found second link:", secondLink);
+          console.log("Found second link:", secondLink);          
           secondLink.addEventListener("click", (e) => {
             e.preventDefault();
-            alert("To be implemented");
+            handleSurpriseMe();
           });
           secondLink.addEventListener("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              alert("To be implemented");
+              handleSurpriseMe();
             }
           });
         }
