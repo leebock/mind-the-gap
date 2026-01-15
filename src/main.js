@@ -20,11 +20,7 @@ const handleFindZip = () => {
   showZipModal(
     (zipCode) => {
       // zipCode is a clean 5-digit string like "12345"
-      const newUrl = `${window.location.pathname}?zip=${zipCode}`;
-      window.history.pushState({}, '', newUrl);
-      
-      // Reload the page with new ZIP code
-      window.location.reload();
+      redirectToZip(zipCode, 0, true);
     },
     () => {
       console.log('ZIP search cancelled');
@@ -305,6 +301,17 @@ async function main() {
           });
         }
     }
+  );
+
+  waitForElement(
+    '#n-fgL3qP', 
+    (element) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('scroll')) {
+        console.log('Scrolling to element:', element);
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } 
   );
 
 }

@@ -2,11 +2,16 @@
  * Redirect to the same page with ZIP code URL parameter
  * @param {string} zip - ZIP code to redirect to
  * @param {number} delay - Optional delay in milliseconds before redirect
+ * @param {boolean} includeScroll - Optional flag to include scroll parameter
  */
-export function redirectToZip(zip, delay) {
+export function redirectToZip(zip, delay, includeScroll) {
   const safeDelay = Number(delay) || 0;
   const base = window.location.href.split("?").shift();
-  const targetUrl = `${base}?zip=${encodeURIComponent(zip)}`;
+  let targetUrl = `${base}?zip=${encodeURIComponent(zip)}`;
+  
+  if (includeScroll) {
+    targetUrl += '&scroll';
+  }
 
   if (safeDelay > 0) {
     setTimeout(() => (window.location.href = targetUrl), safeDelay);
