@@ -120,6 +120,14 @@ async function main() {
   const storyProxy = createStoryProxy(
     [
       {
+        /* map substitutions */
+        url: `0bd47aab81d448a88d0b706c261b3931/data`,
+        subsitutionFn: (json) => {
+          console.log("MODIFYING web map JSON:", json);
+          json.operationalLayers[5].layerDefinition.definitionExpression = `ID = '${zipFeature.attributes.ID}'`;
+        }
+      },
+      {
         url: `a522e87aaa1747b0af699d3b9fe7b21c/data`,
         subsitutionFn: (json) => {
           console.log("Modifying web map JSON:", json);
@@ -199,7 +207,7 @@ async function main() {
                 };
               }
 
-              const extentWithBuffer = bufferedExtent(zipFeature.envelope, 0.3);
+              const extentWithBuffer = bufferedExtent(zipFeature.envelope, 0.05);
               webmapResource.data.viewpoint = {
                 rotation: 0,
                 scale: null,
