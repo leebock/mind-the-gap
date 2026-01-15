@@ -160,7 +160,7 @@ async function main() {
         }
       },
       {
-        url: `chart_details_1768338376638.json`,
+        url: `chart_details_1768339158481.json`,
         subsitutionFn: (json) => {
           console.log("Modifying chart data JSON:", json);
           json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
@@ -172,7 +172,7 @@ async function main() {
         }
       },
       {
-        url: `chart_details_1768335129454.json`,
+        url: `chart_details_1768339228364.json`,
         subsitutionFn: (json) => {
           console.log("Modifying chart data JSON:", json);  
           json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
