@@ -134,14 +134,15 @@ async function main() {
   const storyProxy = createStoryProxy(
     [
       {
-        /* map substitutions */
+        /* content web map substitutions */
         url: `0bd47aab81d448a88d0b706c261b3931/data`,
         subsitutionFn: (json) => {
-          debugLog("MODIFYING web map JSON:", json);
+          debugLog("Modifying web map JSON:", json);
           json.operationalLayers[5].layerDefinition.definitionExpression = `ID = '${zipFeature.attributes.ID}'`;
         }
       },
       {
+        /* locator web map substitutions */
         url: `a522e87aaa1747b0af699d3b9fe7b21c/data`,
         subsitutionFn: (json) => {
           debugLog("Modifying web map JSON:", json);
@@ -149,39 +150,31 @@ async function main() {
         }
       },
       {
-        url: `chart_details_1768335104571.json`,
+        /* chart data substitutions */
+        url: `chart_details`,
         subsitutionFn: (json) => {
-          debugLog("Modifying chart data JSON:", json);
+          const chartTitle = json.chartConfig?.title?.content?.text?.toLowerCase();
+          debugLog("Modifying chart data JSON:", json.chartConfig?.title?.content?.text);
+          let fieldName;
+          if (chartTitle?.includes('income')) {
+            debugLog("Processing income chart");
+            fieldName = 'MEDHINC_CY';
+          } else if (chartTitle?.includes('value')) {
+            debugLog("Processing value chart");
+            fieldName = 'MEDVAL_CY';
+          } else if (chartTitle?.includes('affordability')) {
+            debugLog("Processing affordability chart");
+            fieldName = 'HAI_CY';
+          } else {
+            debugLog("Unknown chart type:", json.chartConfig.title.content.text);            
+            displayErrorMessage(`Unknown chart type: ${json.chartConfig?.title?.content?.text}`);          
+          }
           json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
-          json.inlineData.dataItems[0].field1 = zipFeature.attributes.MEDHINC_CY;
+          json.inlineData.dataItems[0].field1 = zipFeature.attributes[fieldName];
           json.inlineData.dataItems[1].category = stateFeature.attributes.NAME;
-          json.inlineData.dataItems[1].field1 = stateFeature.attributes.MEDHINC_CY;
+          json.inlineData.dataItems[1].field1 = stateFeature.attributes[fieldName];
           json.inlineData.dataItems[2].category = nationFeature.attributes.NAME;
-          json.inlineData.dataItems[2].field1 = nationFeature.attributes.MEDHINC_CY;
-        }
-      },
-      {
-        url: `chart_details_1768339158481.json`,
-        subsitutionFn: (json) => {
-          debugLog("Modifying chart data JSON:", json);
-          json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
-          json.inlineData.dataItems[0].field1 = zipFeature.attributes.MEDVAL_CY;
-          json.inlineData.dataItems[1].category = stateFeature.attributes.NAME;
-          json.inlineData.dataItems[1].field1 = stateFeature.attributes.MEDVAL_CY;
-          json.inlineData.dataItems[2].category = nationFeature.attributes.NAME;
-          json.inlineData.dataItems[2].field1 = nationFeature.attributes.MEDVAL_CY;
-        }
-      },
-      {
-        url: `chart_details_1768339228364.json`,
-        subsitutionFn: (json) => {
-          debugLog("Modifying chart data JSON:", json);  
-          json.inlineData.dataItems[0].category = zipFeature.attributes.ID;
-          json.inlineData.dataItems[0].field1 = zipFeature.attributes.HAI_CY;
-          json.inlineData.dataItems[1].category = stateFeature.attributes.NAME;
-          json.inlineData.dataItems[1].field1 = stateFeature.attributes.HAI_CY;
-          json.inlineData.dataItems[2].category = nationFeature.attributes.NAME;
-          json.inlineData.dataItems[2].field1 = nationFeature.attributes.HAI_CY;
+          json.inlineData.dataItems[2].field1 = nationFeature.attributes[fieldName];
         }
       },
       {
