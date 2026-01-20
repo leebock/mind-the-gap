@@ -1,5 +1,5 @@
 import './style.css'
-import { fetchFeatureByID, fetchFeatureByLatLon } from './censusApi.js'
+import { fetchFeatureByID, fetchFeatureByLatLon } from './arcgisRestApi.js'
 import { displayErrorMessage, showTemporaryMessage } from './ui.js'
 import { showZipModal } from './zipModal.js'
 import { CENSUS_CONFIG } from './config.js'
