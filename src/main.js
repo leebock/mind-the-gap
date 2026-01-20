@@ -277,6 +277,10 @@ async function main() {
 
   window.fetch = storyProxy;
 
+  window.storyMapsEmbedConfig = {
+    topOffset: '4.4rem'
+  };
+
   // Create and insert the embed script manually
   const s = document.createElement('script');
   s.src = "https://storymaps.arcgis.com/embed/view";
@@ -328,7 +332,12 @@ async function main() {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has('scroll')) {
         debugLog('Scrolling to element:', element);
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const header = document.querySelector('header');
+        const headerHeight = header ? header.offsetHeight+10 : 90;
+        const targetPosition = absoluteElementTop - headerHeight;
+        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
       }
       if (document.body.contains(loadingDiv)) {
         document.body.removeChild(loadingDiv);
