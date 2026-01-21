@@ -86,19 +86,24 @@ export const displayErrorMessage = (error) => {
   const errorDiv = document.createElement('div');
   errorDiv.style.cssText = `
     padding: 20px;
-    margin: 20px;
     border: 1px solid #ff6b6b;
     border-radius: 8px;
     background-color: #ffe0e0;
     color: #d63031;
     font-family: Arial, sans-serif;
     max-width: 600px;
+    text-align: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
   `;
   errorDiv.innerHTML = `
     <h3>Error Loading Data</h3>
     <p><em>${error.message}</em></p>
   `;
-  document.body.insertBefore(errorDiv, document.body.firstChild);
+  document.body.appendChild(errorDiv);
 };
 
 /**
