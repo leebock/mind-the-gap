@@ -38,6 +38,10 @@ const RANDOM_ZIPS = [
   '30327', '97034', '75205', '81435', '78704', '55406', '68104', '58201', '71048'
 ];
 
+const currencyFormat = {
+  style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0
+};
+
 /****  end config constants ****/
 
 const debugMessage = DEBUG_MODE ? showTemporaryMessage : () => {};
@@ -204,21 +208,11 @@ async function main() {
             debugLog(node.type, nodeId, node);
             switch(nodeId) {
               case 'n-93Bl6H':
-                node.data.title = zipFeature.attributes.MEDHINC_CY.toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0
-                });
+                node.data.title = zipFeature.attributes.MEDHINC_CY.toLocaleString('en-US', currencyFormat);
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
               case 'n-qeiFVu':
-                node.data.title = zipFeature.attributes.MEDVAL_CY.toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0
-                });
+                node.data.title = zipFeature.attributes.MEDVAL_CY.toLocaleString('en-US', currencyFormat);
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
               case 'n-INkYub':
