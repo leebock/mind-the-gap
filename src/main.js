@@ -19,7 +19,7 @@ limitations under the License.
 import './style.css'
 import { fetchFeatureByID, fetchFeatureByLatLon } from './arcgisRestApi.js'
 import { showZipModal } from './zipModal.js'
-import { redirectToZip, waitForElement, getLatLonByGeoLocation, displayErrorMessage, showTemporaryMessage } from './utils.js'
+import { redirectToZip, waitForElement, getLatLonByGeoLocation, displayErrorMessage, showTemporaryMessage, createBufferedExtent } from './utils.js'
 import { createStoryProxy } from './storyProxy.js'
 
 /****  config constants ****/
@@ -195,33 +195,7 @@ async function main() {
             .filter(([_, resource]) => resource.type === "webmap")
             .forEach(([_, webmapResource]) => {
               debugLog("Modifying webmap resource extent:", webmapResource);
-              debugLog("Zip Feature:", zipFeature);
-
-              const bufferedExtent = (env, buffer = 0.01) => {
-                return {
-                  xmin: env.xmin - buffer,
-                  ymin: env.ymin - buffer,
-                  xmax: env.xmax + buffer,
-                  ymax: env.ymax + buffer,
-                  spatialReference: { wkid: 4326 }
-                };
-              }
-
-              const extentWithBuffer = bufferedExtent(zipFeature.envelope, 0.05);
-              webmapResource.data.viewpoint = {
-                rotation: 0,
-                scale: null,
-                targetGeometry: {
-                  xmin: extentWithBuffer.xmin,
-                  ymin: extentWithBuffer.ymin,
-                  xmax: extentWithBuffer.xmax,
-                  ymax: extentWithBuffer.ymax,
-                  spatialReference: { wkid: 4326 }
-                }
-              };
-
-              delete webmapResource.data.extent;
-
+              webmapResource.data.extent = createBufferedExtent(zipFeature.envelope, 0.05);
             }
           );
         

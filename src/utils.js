@@ -120,3 +120,19 @@ export function showTemporaryMessage(msg) {
   div.style.margin = '0.5em';
   document.body.appendChild(div);
 }
+
+/**
+ * Create a buffered extent from an envelope
+ * @param {Object} env - Envelope object with xmin, ymin, xmax, ymax properties
+ * @param {number} buffer - Buffer amount to add around the extent (default 0.01)
+ * @returns {Object} Buffered extent object with spatial reference
+ */
+export function createBufferedExtent(env, buffer = 0.01) {
+  return {
+    xmin: env.xmin - buffer,
+    ymin: env.ymin - buffer,
+    xmax: env.xmax + buffer,
+    ymax: env.ymax + buffer,
+    spatialReference: { wkid: 4326 }
+  };
+}
