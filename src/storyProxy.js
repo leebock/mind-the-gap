@@ -20,7 +20,7 @@ limitations under the License.
  * Creates a fetch proxy that intercepts requests matching URL patterns
  * and applies custom modifications to the response JSON.
  * 
- * @param {Array} handlers - Array of {url, subsitutionFn} objects
+ * @param {Array} handlers - Array of {url, substitutionFn} objects
  * @returns {Proxy} The fetch proxy to be applied to window.fetch
  */
 export function createStoryProxy(handlers) {
@@ -40,7 +40,7 @@ export function createStoryProxy(handlers) {
                 const originalJson = await res.clone().json();
                 const modifiedJson = structuredClone(originalJson);
                 
-                handler.subsitutionFn(modifiedJson);
+                handler.substitutionFn(modifiedJson);
 
                 return new Response(JSON.stringify(modifiedJson), {
                   status: 200,

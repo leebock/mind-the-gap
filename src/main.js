@@ -132,7 +132,7 @@ async function main() {
       {
         /* content web map substitutions */
         url: `0bd47aab81d448a88d0b706c261b3931/data`,
-        subsitutionFn: (json) => {
+        substitutionFn: (json) => {
           debugLog("Modifying web map JSON:", json);
           json.operationalLayers[5].layerDefinition.definitionExpression = `ID = '${zipFeature.attributes.ID}'`;
         }
@@ -140,7 +140,7 @@ async function main() {
       {
         /* locator web map substitutions */
         url: `a522e87aaa1747b0af699d3b9fe7b21c/data`,
-        subsitutionFn: (json) => {
+        substitutionFn: (json) => {
           debugLog("Modifying web map JSON:", json);
           json.operationalLayers[2].customParameters.where = `ZIP_STRING='${zipFeature.attributes.ID}'`;
         }
@@ -148,7 +148,7 @@ async function main() {
       {
         /* chart data substitutions */
         url: `chart_details`,
-        subsitutionFn: (json) => {
+        substitutionFn: (json) => {
           const chartTitle = json.chartConfig?.title?.content?.text?.toLowerCase();
           debugLog("Modifying chart data JSON:", json.chartConfig?.title?.content?.text);
 
@@ -173,7 +173,7 @@ async function main() {
       {
         /* story data substitutions */
         url: `/embed/view/${STORY_ID}/data`, 
-        subsitutionFn:     
+        substitutionFn:     
         (json) => {
 
           // remove any extent data associated with webmap nodes
