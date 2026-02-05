@@ -19,9 +19,13 @@ limitations under the License.
 import './style.css'
 import { fetchFeatureByID, fetchFeatureByLatLon } from './arcgisRestApi.js'
 import { showZipModal } from './zipModal.js'
-import { CENSUS_CONFIG } from './config.js'
 import { redirectToZip, waitForElement, getLatLonByGeoLocation, displayErrorMessage, showTemporaryMessage } from './utils.js'
 import { createStoryProxy } from './storyProxy.js'
+
+// Census data service URLs
+const SERVICE_URL_ZIP = 'https://services8.arcgis.com/peDZJliSvYims39Q/ArcGIS/rest/services/USA_Latest_Esri_Demographics/FeatureServer/1';
+const SERVICE_URL_STATE = 'https://services8.arcgis.com/peDZJliSvYims39Q/ArcGIS/rest/services/USA_Latest_Esri_Demographics/FeatureServer/2';
+const SERVICE_URL_NATION = 'https://services8.arcgis.com/peDZJliSvYims39Q/ArcGIS/rest/services/USA_Latest_Esri_Demographics/FeatureServer/0';
 
 const DEBUG_MODE = new URLSearchParams(window.location.search).has("debug");
 const DEBUG_MESSAGE_DURATION = 3000;
@@ -85,7 +89,7 @@ async function main() {
     if (latLon) {
         debugMessage(`Geolocated user at: ${latLon.latitude}, ${latLon.longitude}`);
         debugMessage(`Fetching ZIP code for location...`);
-        const zipPreview = await fetchFeatureByLatLon(latLon, CENSUS_CONFIG["Housing Affordability Index 2025"].zip.url);
+        const zipPreview = await fetchFeatureByLatLon(latLon, SERVICE_URL_ZIP);
         if (zipPreview?.attributes?.ID) {
           zipToUse = zipPreview.attributes.ID;
           debugMessage(`ZIP found: ${zipToUse}`);
@@ -122,12 +126,12 @@ async function main() {
 
   try {
 
-    zipFeature = await fetchFeatureByID(CENSUS_CONFIG["Housing Affordability Index 2025"].zip.url, "ID", zipParam, true);
+    zipFeature = await fetchFeatureByID(SERVICE_URL_ZIP, "ID", zipParam, true);
     if (!zipFeature) {
       throw new Error(`No data found for ZIP code: ${zipParam}`);
     }
-    stateFeature = await fetchFeatureByID(CENSUS_CONFIG["Housing Affordability Index 2025"].state.url, "ST_ABBREV", zipFeature.attributes.ST_ABBREV);
-    nationFeature = await fetchFeatureByID(CENSUS_CONFIG["Housing Affordability Index 2025"].nation.url, "ST_ABBREV", "US");
+    stateFeature = await fetchFeatureByID(SERVICE_URL_STATE, "ST_ABBREV", zipFeature.attributes.ST_ABBREV);
+    nationFeature = await fetchFeatureByID(SERVICE_URL_NATION, "ST_ABBREV", "US");
 
     if (zipFeature && stateFeature && nationFeature) {
       debugLog("Data retrieval successful.");      
