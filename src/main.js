@@ -227,7 +227,9 @@ async function main() {
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
               case 'n-qeiFVu': // median home value infographic
-                node.data.title = zipFeature.attributes.MEDVAL_CY.toLocaleString('en-US', currencyFormat);
+                node.data.title = zipFeature.attributes.MEDVAL_CY >= 1000000 
+                  ? `$${(zipFeature.attributes.MEDVAL_CY / 1000000).toFixed(2)} Million`
+                  : zipFeature.attributes.MEDVAL_CY.toLocaleString('en-US', currencyFormat);
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
               case 'n-INkYub': // housing affordability index infographic
