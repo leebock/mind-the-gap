@@ -92,8 +92,6 @@ async function main() {
   // if we made it to here without a redirect, then we have a zipParam to use!
   // time to go to work...
 
-  debugMessage(`✅ Using ZIP param: ${zipParam}`);
-
   // Show loading spinner for data query
   const loadingDiv = document.createElement('div');
   loadingDiv.className = 'loading';
@@ -253,6 +251,11 @@ async function main() {
 
   window.fetch = storyProxy;
 
+  /*******************************************************/
+  // The rest of the code is about embedding the story
+  // and wiring up a few UI elements once the DOM is ready 
+  /*******************************************************/
+
   window.storyMapsEmbedConfig = {
     topOffset: '4.4rem'
   };
@@ -265,7 +268,6 @@ async function main() {
   document.body.appendChild(s);
 
   // find the "Change ZIP code" and "Surprise me" links and attach handlers
-
   const handleFindZip = () => {
     showZipModal(
       async (zipCode) => {
@@ -286,7 +288,7 @@ async function main() {
   const handleSurpriseMe = () => {redirectToZip(getRandomZip(), 0, true);};
 
   waitForElement(
-    '#n-2pk6Mt', 
+    '#n-2pk6Mt', // parent container of 'Change zip code' and 'Surprise me!' links
     (parentDiv) => {
         debugLog("Found parent div:", parentDiv);
         const links = parentDiv.querySelectorAll('a');
@@ -321,8 +323,9 @@ async function main() {
     }
   );
 
+  // if the scroll param is present, scroll to section containing links
   waitForElement(
-    '#n-fgL3qP', 
+    '#n-fgL3qP', // parent container for h4 above links
     (element) => {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has('scroll')) {
@@ -340,6 +343,7 @@ async function main() {
     } 
   );
 
+  // Hide the expand button for the locator map
   waitForElement('#n-ES3CjW button',(element)=>{element.style.display = 'none'})
 
 }
