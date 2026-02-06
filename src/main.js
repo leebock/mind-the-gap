@@ -235,10 +235,10 @@ async function main() {
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
               case 'n-vhFhqc': // 'Change zip code button' - modify href to # to make the link easily findable
-                if (node?.data) node.data.link = '#';
+                node?.data && (node.data.link = '#');
                 break;
               case 'n-uUsrRp': // 'Surprise me button' - modify href to # to make the link easily findable
-                if (node?.data) node.data.link = '#';
+                node?.data && (node.data.link = '#');
                 break;
               default:
                 break;
