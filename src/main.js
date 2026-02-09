@@ -234,8 +234,8 @@ const getRandomZip = () => RANDOM_ZIPS[Math.floor(Math.random() * RANDOM_ZIPS.le
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
               case 'n-qeiFVu': // median home value infographic
-                node.data.title = zipFeature.attributes.MEDVAL_CY >= 1000000 
-                  ? `$${(zipFeature.attributes.MEDVAL_CY / 1000000).toFixed(2)} Million`
+                node.data.title = zipFeature.attributes.MEDVAL_CY >= 2000000 ? `≥ $2 million`
+                  : zipFeature.attributes.MEDVAL_CY >= 1000000 ? `$${(zipFeature.attributes.MEDVAL_CY / 1000000).toFixed(2)} million`
                   : zipFeature.attributes.MEDVAL_CY.toLocaleString('en-US', currencyFormat);
                 node.data.description = node.data.description.replace("[ZIP code]", zipFeature.attributes.ID);
                 break;
